@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Dashboard v1.0</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #00ff41;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 20px #00ff41;
+            text-align: center;
+            border-radius: 15px;
+        }
+
+        h1 { font-size: 1.5rem; letter-spacing: 5px; margin-bottom: 10px; }
+        
+        #clock {
+            font-size: 5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff41;
+            margin: 20px 0;
+        }
+
+        .status {
+            font-size: 0.9rem;
+            color: #008f11;
+        }
+
+        .task-list {
+            margin-top: 20px;
+            text-align: left;
+            border-top: 1px solid #008f11;
+            padding-top: 10px;
+        }
+
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <h1>SYSTEM STATUS: ACTIVE</h1>
+        <div id="clock">00:00:00</div>
+        <div class="status">
+            <span class="blink">></span> SESSION_ID: <span id="session"></span><br>
+            <span class="blink">></span> OS_DETECTED: <span id="os"></span>
+        </div>
+
+        <div class="task-list">
+            <div>[OK] Firewall encrypted</div>
+            <div>[OK] Proxy chains redirected</div>
+            <div>[WAIT] Monitoring packets...</div>
+        </div>
+    </div>
+
+    <script>
+        // Effetto Matrix di sfondo
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00ff41";
+            ctx.font = fontSize + "px arial";
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        // Orologio
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
+                            now.getMinutes().toString().padStart(2, '0') + ":" + 
+                            now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('clock').innerText = timeStr;
+        }
+
+        // Info finte ma realistiche
+        document.getElementById('session').innerText = Math.random().toString(36).substring(2, 10).toUpperCase();
+        document.getElementById('os').innerText = navigator.platform;
+
+        setInterval(drawMatrix, 50);
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
